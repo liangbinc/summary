@@ -1,0 +1,24 @@
+*.class
+.project
+.classpath
+.settings
+.idea
+target
+# Package Files #
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+*.orig
+*.rej
+*.prefs
+target/
+test-output/
+*.lst
+/bin/
+.pydevproject
+logs/
+UserCoins
+.mvn
