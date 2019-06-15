@@ -8,4 +8,6 @@ public interface TestService {
 
     GroupUsers.User getUserInfoCache(String user);
 
+    String testCache(String user);
+
 }

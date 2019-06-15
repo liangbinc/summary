@@ -35,4 +35,15 @@ public class TestServiceImpl implements TestService {
         }
         return userInfo;
     }
+
+    @Override
+    @Cacheable(value = "nettyCache", key = "#user")
+    public String testCache(String user) {
+        if ("chang".equals(user)) {
+            System.out.println(11111);
+            return "lb";
+        }else {
+            return null;
+        }
+    }
 }

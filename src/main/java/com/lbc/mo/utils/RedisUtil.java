@@ -8,8 +8,6 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.util.Pool;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 public class RedisUtil {
 
@@ -27,30 +25,9 @@ public class RedisUtil {
         config.setTestWhileIdle(true);
         config.setTestOnBorrow(true);
         config.setTimeBetweenEvictionRunsMillis(30000);
-        Set<String> sentinels = new HashSet<String>();
-//        sentinels.add("localhost:26379");
-//        sentinels.add("
-// .82:26379");
-//        sentinels.add("192.168.172.83:26379");
-//        pool = new JedisSentinelPool("mymaster", sentinels, config);
-        pool = new JedisPool("11.111.158.197");
-
+        pool = new JedisPool("localhost");
         return pool;
 
-//        pool = new JedisPool(config, host, port);
-//        LOG.info("创建redisPool执行");
-
-
-//        JedisPoolConfig config = new JedisPoolConfig();
-//        config.setMaxTotal(100);
-//        config.setMaxWaitMillis(100000);
-//        config.setMaxIdle(100);
-//        config.setTestWhileIdle(true);
-//        config.setTestOnBorrow(true);
-//        config.setTimeBetweenEvictionRunsMillis(30000);
-
-
-//        return pool;
     }
 
     public static synchronized Jedis getJeidsConn() throws IOException {

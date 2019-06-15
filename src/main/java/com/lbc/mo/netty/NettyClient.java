@@ -1,6 +1,6 @@
-package com.lbc.mo.utils;
+package com.lbc.mo.netty;
 
-import com.lbc.mo.entity.ContainerStats;
+import com.lbc.mo.utils.StatsMapCache;
 import io.grpc.netty.shaded.io.netty.bootstrap.Bootstrap;
 import io.grpc.netty.shaded.io.netty.buffer.ByteBuf;
 import io.grpc.netty.shaded.io.netty.channel.Channel;
@@ -16,26 +16,17 @@ import io.grpc.netty.shaded.io.netty.channel.socket.nio.NioSocketChannel;
 import io.grpc.netty.shaded.io.netty.util.ReferenceCountUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
-public class NettyClient {
+@Component
+public class NettyClient implements InitializingBean {
     static final Bootstrap STRAP = new Bootstrap();
     static final EventLoopGroup WORKERGROUP = new NioEventLoopGroup();
     private static final Log LOG = LogFactory.getLog(NettyClient.class);
-    private static NettyClient nettyClient;
 
-    public static NettyClient getInstance() {
-        if (null == nettyClient) {
-            synchronized (NettyClient.class) {
-                if (null == nettyClient) {
-                    nettyClient = new NettyClient();
-                    STRAP.channel(NioSocketChannel.class)
-                            .option(ChannelOption.SO_KEEPALIVE, true)
-                            .group(WORKERGROUP);
-                }
-            }
-        }
-        return nettyClient;
-    }
 
     public static int byteArrayToInt(byte[] b) {
         return b[3] & 0xFF |
@@ -56,15 +47,35 @@ public class NettyClient {
         }
     }
 
-    public Channel connect(String host, int port, String containerName) throws Exception {
+    @Cacheable(value = "nettyCache", key = "#containerName")
+    public Channel connect(String host, int port, String containerName) {
+        LOG.info("con " + containerName);
         STRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ClientHandler(containerName));
             }
         });
-        ChannelFuture future = STRAP.connect(host, port).sync();
+
+        ChannelFuture future = null;
+        try {
+            future = STRAP.connect(host, port).sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return future.channel();
+    }
+
+    @CacheEvict(value = "nettyCache", key = "#containerName", allEntries = false, beforeInvocation = true)
+    public void cleanCon(String containerName) {
+        LOG.info("clean con" + containerName);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        STRAP.channel(NioSocketChannel.class)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .group(WORKERGROUP);
     }
 
     static class ClientHandler extends ChannelInboundHandlerAdapter {
@@ -76,21 +87,19 @@ public class NettyClient {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            //result
-            StatsMapCache statsMapCache = StatsMapCache.getInstance();
             try {
                 ByteBuf in = (ByteBuf) msg;
                 byte[] readBody = new byte[in.readableBytes()];
+//                long l = in.readUnsignedInt();
                 in.readBytes(readBody);
                 byte[] statslen = new byte[4];
                 if (readBody.length > 0) {
-                    ContainerStats stats = (ContainerStats) statsMapCache.getCache(containerName);
                     System.arraycopy(readBody, 0, statslen, 0, statslen.length);
                     if (readBody.length - 4 >= byteArrayToInt(statslen) && byteArrayToInt(statslen) > 0) {
 
                         byte[] stream = new byte[byteArrayToInt(statslen)];
                         System.arraycopy(readBody, 4, stream, 0, byteArrayToInt(statslen));
-
+                        LOG.info("client receive the server callback :" + new String(stream));
 
                     } else {
                         LOG.info("the " + containerName + " length not enough");
@@ -98,7 +107,6 @@ public class NettyClient {
                 }
             } catch (RuntimeException e) {
                 LOG.error("Netty Exception : " + containerName + e.getMessage());
-                statsMapCache.removeCache(containerName);
                 ctx.close();
             } finally {
                 ReferenceCountUtil.release(msg);
@@ -121,7 +129,6 @@ public class NettyClient {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-
             LOG.info("Client channelActive" + ctx.channel().remoteAddress() + containerName);
         }
 
@@ -137,10 +144,12 @@ public class NettyClient {
 
         @Override
         public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-            if (StatsMapCache.getInstance().containsKeyCache(containerName)) {
-                LOG.info("Client channelUnRegistered" + ctx.channel().remoteAddress() + " " + containerName);
-                StatsMapCache.getInstance().removeCache(containerName);
-            }
+            LOG.info("Client channelUnRegistered" + ctx.channel().remoteAddress() + " " + containerName);
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        NettyClient nettyClient = new NettyClient();
+        nettyClient.connect("localhost", 62598, "test");
     }
 }

@@ -27,6 +27,15 @@
             timeToLiveSeconds = "21600"
             memoryStoreEvictionPolicy = "LRU"/>
 
+    <cache
+            name = "nettyCache"
+            eternal = "false"
+            maxElementsInMemory = "5000"
+            overflowToDisk = "false"
+            diskPersistent = "false"
+            timeToIdleSeconds = "0"
+            timeToLiveSeconds = "21600"
+            memoryStoreEvictionPolicy = "LRU"/>
     <!-- maxElementsInMemory 内存中最大缓存对象数，看着自己的heap大小来搞 -->
     <!-- eternal：true表示对象永不过期，此时会忽略timeToIdleSeconds和timeToLiveSeconds属性，默认为false -->
     <!-- maxElementsOnDisk：硬盘中最大缓存对象数，若是0表示无穷大 -->

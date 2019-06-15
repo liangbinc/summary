@@ -1,9 +1,11 @@
 package com.lbc.corgi;
 
 import com.lbc.mo.Application;
+import com.lbc.mo.service.TestService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -17,6 +19,8 @@ public class EhcacheTest {
 
     @Resource
     private EhCacheCacheManager ehCacheCacheManager;
+    @Autowired
+    TestService testService;
 
     @Test
     public void cacheSet() {
@@ -27,5 +31,13 @@ public class EhcacheTest {
         System.out.println("缓存成功");
         String res = cache.get("key", String.class);
         System.out.println(res);
+    }
+
+    @Test
+    public void test() {
+        String chang = testService.testCache("chang");
+        System.out.println(chang);
+        String chang1 = testService.testCache("chang");
+        System.out.println(chang1);
     }
 }

@@ -1,4 +1,4 @@
-package com.lbc.corgi;
+package com.lbc.mo.netty;
 
 import com.lbc.mo.bean.StreamMessageFactory;
 import com.lbc.mo.bean.StreamType;
@@ -14,9 +14,11 @@ import io.grpc.netty.shaded.io.netty.channel.ChannelInitializer;
 import io.grpc.netty.shaded.io.netty.channel.EventLoopGroup;
 import io.grpc.netty.shaded.io.netty.channel.nio.NioEventLoopGroup;
 import io.grpc.netty.shaded.io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.grpc.netty.shaded.io.netty.util.ReferenceCountUtil;
 import io.grpc.netty.shaded.io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -31,19 +33,11 @@ public class StreamService {
 
 
     private Channel channel;
-    private int port;
+    private static int port;
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
-    public static void main(String[] args) {
-        try {
-            new StreamService().serviceInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public void serviceInit() throws Exception {
         int bossSize = 1;
@@ -56,7 +50,6 @@ public class StreamService {
         port = getTransportPort();
 
         LOG.info("StreamService Started listen on " + port);
-        System.out.println("2");
     }
 
     protected void serviceStop() throws Exception {
@@ -69,19 +62,17 @@ public class StreamService {
         bossGroup.shutdownGracefully();
     }
 
-    public int getPort() {
+    public static int getPort() {
         return port;
     }
 
     protected void initNettyServer() throws IOException {
         ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup);
-        b.channel(NioServerSocketChannel.class);
-
-        b.option(SO_BACKLOG, 128);
-        b.childOption(SO_KEEPALIVE, true);
-
-        b.childHandler(new ChannelInitializer<Channel>() {
+        b.group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel.class)
+            .option(SO_BACKLOG, 128)
+            .childOption(SO_KEEPALIVE, true)
+            .childHandler(new ChannelInitializer<Channel>() {
             @Override
             public void initChannel(Channel ch) throws Exception {
                 LOG.info("StreamService Netty Channel init");
@@ -122,58 +113,34 @@ public class StreamService {
         return ((InetSocketAddress) localAddr).getPort();
     }
 
-    public void start(int port) {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup);
-            b.channel(NioServerSocketChannel.class);
-            b.childHandler(new ChannelInitializer<Channel>() {
-                @Override
-                public void initChannel(Channel ch) throws Exception {
-                    LOG.info("StreamService Netty Channel init");
-
-                    ch.pipeline().addLast(new StreamHandler());
-
-                    ch.closeFuture().addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture future) {
-                            LOG.info("StreamService Netty Channel close");
-                        }
-                    });
-                }
-            });
-
-            // 服务器绑定端口监听
-            ChannelFuture f = b.bind(port).sync();
-            // 监听服务器关闭监听
-//            f.channel().closeFuture().sync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     static class StreamHandler extends ChannelInboundHandlerAdapter {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            StreamMessageFactory streamMessageFactory = decode((ByteBuf) msg);
-            LOG.info("stream type : " + streamMessageFactory.getType());
-            if (streamMessageFactory != null && streamMessageFactory.getType() != null) {
+            try {
+                StreamMessageFactory streamMessageFactory = decode((ByteBuf) msg);
+                LOG.info("stream type : " + streamMessageFactory.getType());
+                if (streamMessageFactory != null && streamMessageFactory.getType() != null) {
 
-                if (streamMessageFactory.getType() == StreamType.STAT) {
-
-                    doStatContainer(ctx, "msg");
+                    if (streamMessageFactory.getType() == StreamType.LOG) {
+                        byte[] message = streamMessageFactory.getMessage();
+                        String s = new String(message);
+                        LOG.info("server receive :" + s);
+                        doLogContainer(ctx, "msg");
+                    } else {
+                        LOG.error("Error Stream Type");
+                        ctx.write("Error Stream Type");
+                        ctx.close();
+                    }
                 } else {
-                    LOG.error("Error Stream Type");
-                    ctx.write("Error Stream Type");
+                    LOG.error("Error when channelRead");
+                    ctx.write("Error when decode");
                     ctx.close();
                 }
-            } else {
-                LOG.error("Error when channelRead");
-                ctx.write("Error when decode");
-                ctx.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                ReferenceCountUtil.release(msg);
             }
         }
 
@@ -207,9 +174,13 @@ public class StreamService {
         }
 
 
-        void doStatContainer(ChannelHandlerContext ctx, String containerStatMessage) {
-            LOG.info("stat :" + containerStatMessage);
-            ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(containerStatMessage.getBytes()));
+        void doLogContainer(ChannelHandlerContext ctx, String containerStatMessage) {
+            LOG.info("log :" + containerStatMessage);
+            byte[] statMsg = containerStatMessage.getBytes();
+            byte[] body = new byte[4 + statMsg.length];
+            Bytes.putInt(body, 0, statMsg.length);
+            Bytes.putBytes(body, 4, statMsg, 0, statMsg.length);
+            ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(body));
         }
 
         public static byte[] tail(byte[] a, int length) {

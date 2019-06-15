@@ -8,7 +8,6 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @EnableScheduling
@@ -28,13 +27,13 @@ public class SchedulerTask {
     }
 
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 5000)
-    public AppIdMapCache saveDataToMysqlandCheck() {
-        LOG.info("data loading completed");
-        return resultMap;
-    }
+//    @Scheduled(initialDelay = 1000, fixedDelay = 5000)
+//    public AppIdMapCache saveDataToMysqlandCheck() {
+//        LOG.info("data loading completed");
+//        return resultMap;
+//    }
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 5000)
+    //    @Scheduled(initialDelay = 1000, fixedDelay = 5000)
     public void stats() {
         //extra service
         LOG.info("loading extra service");
