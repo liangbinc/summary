@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation = "http://ehcache.org/ehcache.xsd"
-         updateCheck = "false">
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false">
 
     <!-- 指定一个文件目录，当EHCache把数据写到硬盘上时，将把数据写到这个文件目录下 -->
-    <diskStore path = "java.io.tmpdir"/>
+    <diskStore path="java.io.tmpdir"/>
 
     <defaultCache
-            eternal = "false"
-            maxElementsInMemory = "10000"
-            overflowToDisk = "true"
-            diskPersistent = "false"
-            timeToIdleSeconds = "0"
-            timeToLiveSeconds = "120"
-            diskExpiryThreadIntervalSeconds = "120"
-            memoryStoreEvictionPolicy = "LRU"/>
+            eternal="false"
+            maxElementsInMemory="10000"
+            overflowToDisk="true"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="120"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU"/>
 
     <!-- 此缓存最多可以存活timeToLiveSeconds秒，如果期间超过timeToIdleSeconds秒未访问，缓存失效 -->
     <cache
-            name = "redisUserInfo"
-            eternal = "false"
-            maxElementsInMemory = "5000"
-            overflowToDisk = "false"
-            diskPersistent = "false"
-            timeToIdleSeconds = "0"
-            timeToLiveSeconds = "21600"
-            memoryStoreEvictionPolicy = "LRU"/>
+            name="redisUserInfo"
+            eternal="false"
+            maxElementsInMemory="5000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="21600"
+            memoryStoreEvictionPolicy="LRU"/>
 
     <cache
-            name = "nettyCache"
-            eternal = "false"
-            maxElementsInMemory = "5000"
-            overflowToDisk = "false"
-            diskPersistent = "false"
-            timeToIdleSeconds = "0"
-            timeToLiveSeconds = "21600"
-            memoryStoreEvictionPolicy = "LRU"/>
+            name="nettyCache"
+            eternal="false"
+            maxElementsInMemory="5000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="21600"
+            memoryStoreEvictionPolicy="LRU"/>
     <!-- maxElementsInMemory 内存中最大缓存对象数，看着自己的heap大小来搞 -->
     <!-- eternal：true表示对象永不过期，此时会忽略timeToIdleSeconds和timeToLiveSeconds属性，默认为false -->
     <!-- maxElementsOnDisk：硬盘中最大缓存对象数，若是0表示无穷大 -->

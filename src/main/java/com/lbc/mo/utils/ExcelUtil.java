@@ -15,6 +15,9 @@ import java.util.List;
 
 public class ExcelUtil {
 
+    private ExcelUtil() {
+    }
+
     //data to excel
     public static String createExcel(List<User> users) {
         String path = MonitorConstants.COINS_EXCEL_OUTPUT_PATH;

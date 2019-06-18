@@ -30,14 +30,14 @@ import static io.grpc.netty.shaded.io.netty.channel.ChannelOption.SO_KEEPALIVE;
 public class StreamService {
 
     private static final Log LOG = LogFactory.getLog(StreamService.class);
-
-
-    private Channel channel;
     private static int port;
-
+    private Channel channel;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
+    public static int getPort() {
+        return port;
+    }
 
     public void serviceInit() throws Exception {
         int bossSize = 1;
@@ -62,31 +62,27 @@ public class StreamService {
         bossGroup.shutdownGracefully();
     }
 
-    public static int getPort() {
-        return port;
-    }
-
     protected void initNettyServer() throws IOException {
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
-            .channel(NioServerSocketChannel.class)
-            .option(SO_BACKLOG, 128)
-            .childOption(SO_KEEPALIVE, true)
-            .childHandler(new ChannelInitializer<Channel>() {
-            @Override
-            public void initChannel(Channel ch) throws Exception {
-                LOG.info("StreamService Netty Channel init");
-
-                ch.pipeline().addLast(new StreamHandler());
-
-                ch.closeFuture().addListener(new ChannelFutureListener() {
+                .channel(NioServerSocketChannel.class)
+                .option(SO_BACKLOG, 128)
+                .childOption(SO_KEEPALIVE, true)
+                .childHandler(new ChannelInitializer<Channel>() {
                     @Override
-                    public void operationComplete(ChannelFuture future) {
-                        LOG.info("StreamService Netty Channel close");
+                    public void initChannel(Channel ch) throws Exception {
+                        LOG.info("StreamService Netty Channel init");
+
+                        ch.pipeline().addLast(new StreamHandler());
+
+                        ch.closeFuture().addListener(new ChannelFutureListener() {
+                            @Override
+                            public void operationComplete(ChannelFuture future) {
+                                LOG.info("StreamService Netty Channel close");
+                            }
+                        });
                     }
                 });
-            }
-        });
 
         // Bind and start to accept incoming connections.
         ChannelFuture future = b.bind(0);
@@ -114,6 +110,16 @@ public class StreamService {
     }
 
     static class StreamHandler extends ChannelInboundHandlerAdapter {
+
+        public static byte[] tail(byte[] a, int length) {
+            if (a.length < length) {
+                return null;
+            } else {
+                byte[] result = new byte[length];
+                System.arraycopy(a, a.length - length, result, 0, length);
+                return result;
+            }
+        }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -173,7 +179,6 @@ public class StreamService {
             return new StreamMessageFactory(magic, type, tail(readBody, readBody.length - 2));
         }
 
-
         void doLogContainer(ChannelHandlerContext ctx, String containerStatMessage) {
             LOG.info("log :" + containerStatMessage);
             byte[] statMsg = containerStatMessage.getBytes();
@@ -181,16 +186,6 @@ public class StreamService {
             Bytes.putInt(body, 0, statMsg.length);
             Bytes.putBytes(body, 4, statMsg, 0, statMsg.length);
             ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(body));
-        }
-
-        public static byte[] tail(byte[] a, int length) {
-            if (a.length < length) {
-                return null;
-            } else {
-                byte[] result = new byte[length];
-                System.arraycopy(a, a.length - length, result, 0, length);
-                return result;
-            }
         }
     }
 }

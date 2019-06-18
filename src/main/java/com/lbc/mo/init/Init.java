@@ -1,7 +1,6 @@
 package com.lbc.mo.init;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.lbc.mo.bean.GroupUsers;
 import com.lbc.mo.constants.MonitorConstants;
 import com.lbc.mo.netty.StreamService;
@@ -48,7 +47,7 @@ public class Init implements ApplicationRunner {
         } else if (MonitorConstants.CONTAINERS_STATISTICS_SERVICE == port) {
             LOG.info("Containers_statistics service Initializing caches");
             LOG.info("Initialization complete");
-        }else {
+        } else {
             StreamService streamService = new StreamService();
             streamService.serviceInit();
         }

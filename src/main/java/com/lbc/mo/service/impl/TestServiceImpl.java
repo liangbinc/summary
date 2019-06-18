@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
+
 @Service
 public class TestServiceImpl implements TestService {
 
@@ -52,7 +53,7 @@ public class TestServiceImpl implements TestService {
         if ("chang".equals(user)) {
             System.out.println(11111);
             return "lb";
-        }else {
+        } else {
             return null;
         }
     }

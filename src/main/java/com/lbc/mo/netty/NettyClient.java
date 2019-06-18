@@ -35,6 +35,11 @@ public class NettyClient implements InitializingBean {
                 (b[0] & 0xFF) << 24;
     }
 
+    public static void main(String[] args) throws Exception {
+        NettyClient nettyClient = new NettyClient();
+        nettyClient.connect("localhost", 62598, "test");
+    }
+
     public void close() {
         WORKERGROUP.shutdownGracefully();
     }
@@ -146,10 +151,5 @@ public class NettyClient implements InitializingBean {
         public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
             LOG.info("Client channelUnRegistered" + ctx.channel().remoteAddress() + " " + containerName);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        NettyClient nettyClient = new NettyClient();
-        nettyClient.connect("localhost", 62598, "test");
     }
 }

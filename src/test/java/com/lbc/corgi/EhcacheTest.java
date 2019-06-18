@@ -17,10 +17,10 @@ import javax.annotation.Resource;
 @SpringBootTest(classes = {Application.class})
 public class EhcacheTest {
 
-    @Resource
-    private EhCacheCacheManager ehCacheCacheManager;
     @Autowired
     TestService testService;
+    @Resource
+    private EhCacheCacheManager ehCacheCacheManager;
 
     @Test
     public void cacheSet() {

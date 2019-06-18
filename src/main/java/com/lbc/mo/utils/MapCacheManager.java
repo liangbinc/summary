@@ -11,8 +11,10 @@ public class MapCacheManager {
 
     private static volatile MapCacheManager mapCacheObject;
     private static volatile Map<String, Map<String, String>> cacheMap = new ConcurrentHashMap<String, Map<String, String>>();
+
     private MapCacheManager() {
     }
+
     public static MapCacheManager getInstance() {
         if (null == mapCacheObject) {
             synchronized (MapCacheManager.class) {

@@ -5,7 +5,6 @@ import com.lbc.mo.dao.UserDao;
 import com.lbc.mo.dao.mapper.UserMapper;
 import com.lbc.mo.entity.User;
 import com.lbc.mo.utils.TargetDataSource;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

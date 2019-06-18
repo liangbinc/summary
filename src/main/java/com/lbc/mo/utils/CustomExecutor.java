@@ -30,6 +30,8 @@ public class CustomExecutor extends ExecutorConfigurationSupport
     private static final Log LOG = LogFactory.getLog(CustomExecutor.class);
 
     private final Object poolSizeMonitor = new Object();
+    private final Map<Runnable, Object> decoratedTaskMap =
+            new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
     private int corePoolSize = 1;
     private int maxPoolSize = 2147483647;
     private int keepAliveSeconds = 60;
@@ -41,8 +43,12 @@ public class CustomExecutor extends ExecutorConfigurationSupport
     public CustomExecutor() {
     }
 
-    private final Map<Runnable, Object> decoratedTaskMap =
-            new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
+    public int getCorePoolSize() {
+        Object var1 = this.poolSizeMonitor;
+        synchronized (this.poolSizeMonitor) {
+            return this.corePoolSize;
+        }
+    }
 
     public void setCorePoolSize(int corePoolSize) {
         Object var2 = this.poolSizeMonitor;
@@ -55,10 +61,10 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
-    public int getCorePoolSize() {
+    public int getMaxPoolSize() {
         Object var1 = this.poolSizeMonitor;
         synchronized (this.poolSizeMonitor) {
-            return this.corePoolSize;
+            return this.maxPoolSize;
         }
     }
 
@@ -73,10 +79,10 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
-    public int getMaxPoolSize() {
+    public int getKeepAliveSeconds() {
         Object var1 = this.poolSizeMonitor;
         synchronized (this.poolSizeMonitor) {
-            return this.maxPoolSize;
+            return this.keepAliveSeconds;
         }
     }
 
@@ -88,13 +94,6 @@ public class CustomExecutor extends ExecutorConfigurationSupport
                 this.threadPoolExecutor.setKeepAliveTime((long) keepAliveSeconds, TimeUnit.SECONDS);
             }
 
-        }
-    }
-
-    public int getKeepAliveSeconds() {
-        Object var1 = this.poolSizeMonitor;
-        synchronized (this.poolSizeMonitor) {
-            return this.keepAliveSeconds;
         }
     }
 
