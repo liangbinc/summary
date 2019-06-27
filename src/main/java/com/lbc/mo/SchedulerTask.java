@@ -1,6 +1,5 @@
 package com.lbc.mo;
 
-import com.lbc.mo.utils.AppIdMapCache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -17,7 +16,6 @@ public class SchedulerTask {
 
 
     private static final Log LOG = LogFactory.getLog(SchedulerTask.class);
-    static AppIdMapCache resultMap = AppIdMapCache.getInstance();
 
 
     @Bean

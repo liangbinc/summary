@@ -5,8 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,13 +19,13 @@ public class MonitorController {
     EhCacheCacheManager ehCacheCacheManager;
 
 
-    @RequestMapping(value = "/manage", method = RequestMethod.POST)
+    @PostMapping(value = "/manage")
     public String manageGpuLable(@RequestParam String sDay, @RequestParam String eDay) {
         return "done";
     }
 
 
-    @RequestMapping(value = "/testNetty", method = RequestMethod.GET)
+    @GetMapping(value = "/testNetty")
     public void manageGpuLable() {
         testService.conNetty();
     }
