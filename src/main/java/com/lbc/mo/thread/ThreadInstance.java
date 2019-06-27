@@ -13,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class ThreadInstance {
+    private ThreadInstance() {
+    }
 
     static class ExtThread extends Thread {
         private final int id;
 
-        public ExtThread(Integer id) {
+        ExtThread(Integer id) {
             this.id = id;
         }
 
@@ -35,7 +37,7 @@ public class ThreadInstance {
     static class RunThread implements Runnable {
         private final int id;
 
-        public RunThread(Integer id) {
+        RunThread(Integer id) {
             this.id = id;
         }
 
@@ -49,7 +51,7 @@ public class ThreadInstance {
     static class CallThread implements Callable {
         private final int id;
 
-        public CallThread(Integer id) {
+        CallThread(Integer id) {
             this.id = id;
         }
 
@@ -61,7 +63,9 @@ public class ThreadInstance {
     }
 
     public static void main(String[] args) {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 5, (long) 60, TimeUnit.SECONDS, new LinkedBlockingQueue(100), Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 5,
+                60L, TimeUnit.SECONDS, new LinkedBlockingQueue(100),
+                Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
         ArrayList<Future<String>> futures = Lists.newArrayList();
         IntStream.range(0, 3).forEach(i -> {
