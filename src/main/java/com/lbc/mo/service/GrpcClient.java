@@ -6,7 +6,6 @@ import io.grpc.examples.TestProto;
 import io.grpc.examples.TestServiceGrpc;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class GrpcClient {
     private final ManagedChannel channel;

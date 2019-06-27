@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class GrpcServer {
 
-    private static final Log logger = LogFactory.getLog(GrpcServer.class);
+    private static final Log LOG = LogFactory.getLog(GrpcServer.class);
 
     private Server server;
 
@@ -23,7 +23,7 @@ public class GrpcServer {
                 .addService(new TestService())
                 .build()
                 .start();
-        logger.info("Server started, listening on " + port);
+        LOG.info("Server started, listening on " + port);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
