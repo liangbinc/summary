@@ -9,21 +9,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
-@EnableCaching
 public class CacheConfiguration {
+    /**
+     * get cache manager
+     */
 
-    @Bean(name = "ehcache")
-    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
-        EhCacheManagerFactoryBean cacheBean = new EhCacheManagerFactoryBean();
-        cacheBean.setConfigLocation(new ClassPathResource("ehcache.xml"));
-        return cacheBean;
-    }
+//    @Bean(name = "ehcache")
+//    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
+//        EhCacheManagerFactoryBean cacheBean = new EhCacheManagerFactoryBean();
+//        cacheBean.setConfigLocation(new ClassPathResource("ehcache.xml"));
+//        return cacheBean;
+//    }
 
-    @Bean("ehCacheCacheManager")
-    public EhCacheCacheManager ehCacheCacheManager(@Qualifier("ehcache") net.sf.ehcache.CacheManager ehcacheManager) {
-        EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager(ehcacheManager);
-        return ehCacheCacheManager;
-    }
+//    @Bean("ehCacheCacheManager")
+//    public EhCacheCacheManager ehCacheCacheManager(@Qualifier("ehcache")  ehcacheManager) {
+//        EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager(ehcacheManager);
+//        return ehCacheCacheManager;
+//    }
 
 //    @Bean(name = "cacheManager")
 //    @Primary
