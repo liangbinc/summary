@@ -39,6 +39,7 @@ public class MonitorConstants {
     public static final Long APP_KILLED_TIMES = 3L;
     public static final Integer PRE_WEEKS = 3;
     public static final Integer CONTAINERS_STATISTICS_SERVICE = 8090;
+    public static final Integer PROMETHEUS_SERVICE = 8090;
     public static final Integer PERIOD_SERVICE = 8080;
     public static final String COINS_EXCEL_OUTPUT_PATH = File.separator + "UserCoins" + File.separator;
     public static final String COINS_EXCEL_OUTPUT_PATH_FILENAME = File.separator + "UserCoins_%s.xlsx";
