@@ -1,7 +1,6 @@
 package com.lbc.mo.task;
 
 import com.lbc.mo.conf.MailCondition;
-import com.lbc.mo.conf.MyCondition;
 import com.lbc.mo.service.TestService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

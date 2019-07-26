@@ -2,7 +2,6 @@ package com.lbc.mo;
 
 import com.lbc.mo.entity.User;
 import com.lbc.mo.service.TestService;
-import io.prometheus.client.Counter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,6 @@ public class MonitorController {
     TestService testService;
     @Autowired
     EhCacheCacheManager ehCacheCacheManager;
-    /*
-        *  使用Counter.build()创建Counter类型的监控指标，并且通过name()方法定义监控指标的名称network_traffic_input
-        * ，通过labelNames()定义该指标包含的标签。最后通过register()将该指标注册到Collector的defaultRegistry中
-        */
 
     @PostMapping(value = "/manage")
     public User manageGpuLable(@RequestParam String sDay, @RequestParam String eDay) {
