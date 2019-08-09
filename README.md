@@ -13,3 +13,5 @@ https://shardingsphere.apache.org/
 开启线程池,利用多线程处理io数据(Runtime.getRuntime().exec(cmd) 在linux执行命令),合理分配线程池大小  
 5.gprc client/server(com.lbc.mo.service)  
 
+[design_patterns](https://sourcemaking.com/design_patterns)
+
