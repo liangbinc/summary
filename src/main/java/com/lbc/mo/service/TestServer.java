@@ -5,14 +5,13 @@ import io.grpc.ServerBuilder;
 import io.grpc.examples.TestProto;
 import io.grpc.examples.TestServiceGrpc;
 import io.grpc.stub.StreamObserver;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
-public class GrpcServer {
+public class TestServer {
 
-    private static final Log LOG = LogFactory.getLog(GrpcServer.class);
+    private static final Logger logger = Logger.getLogger(TestServer.class.getName());
 
     private Server server;
 
@@ -23,13 +22,13 @@ public class GrpcServer {
                 .addService(new TestService())
                 .build()
                 .start();
-        LOG.info("Server started, listening on " + port);
+        logger.info("Server started, listening on " + port);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 // Use stderr here since the logger may have been reset by its JVM shutdown hook.
                 System.err.println("*** shutting down gRPC server since JVM is shutting down");
-                GrpcServer.this.stop();
+                TestServer.this.stop();
                 System.err.println("*** server shut down");
             }
         });
@@ -45,7 +44,7 @@ public class GrpcServer {
      * Main launches the server from the command line.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        final GrpcServer server = new GrpcServer();
+        final TestServer server = new TestServer();
         server.start();
         server.blockUntilShutdown();
     }

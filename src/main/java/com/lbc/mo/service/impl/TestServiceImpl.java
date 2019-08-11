@@ -13,7 +13,6 @@ import io.grpc.netty.shaded.io.netty.buffer.Unpooled;
 import io.grpc.netty.shaded.io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
@@ -51,17 +50,6 @@ public class TestServiceImpl implements TestService {
     @Override
     @Cacheable(value = "nettyCache", key = "#user")
     public String testCache(String user) {
-        if ("chang".equals(user)) {
-            System.out.println(11111);
-            return "lb";
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    @CacheEvict(value = "nettyCache", key = "#user")
-    public String testEvictCache(String user) {
         if ("chang".equals(user)) {
             System.out.println(11111);
             return "lb";

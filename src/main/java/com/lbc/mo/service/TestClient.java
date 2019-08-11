@@ -6,16 +6,18 @@ import io.grpc.examples.TestProto;
 import io.grpc.examples.TestServiceGrpc;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-public class GrpcClient {
+public class TestClient {
+    private static final Logger logger = Logger.getLogger(TestClient.class.getName());
     private final ManagedChannel channel;
     private final TestServiceGrpc.TestServiceBlockingStub blockingStub;
 
-    public GrpcClient(String host, Integer port) {
+    public TestClient(String host, Integer port) {
         this(ManagedChannelBuilder.forAddress(host, port).usePlaintext().build());
     }
 
-    public GrpcClient(ManagedChannel channel) {
+    public TestClient(ManagedChannel channel) {
         this.channel = channel;
         this.blockingStub = TestServiceGrpc.newBlockingStub(channel);
     }
@@ -25,8 +27,8 @@ public class GrpcClient {
     }
 
     public static void main(String[] args) {
-        GrpcClient testClient = new GrpcClient("localhost", 9099);
-        TestProto.TestRequest changlb1 = TestProto.TestRequest.newBuilder().setName("changlb").build();
+        TestClient testClient = new TestClient("localhost", 9099);
+        TestProto.TestRequest changlb1 = TestProto.TestRequest.newBuilder().setName("changlb1").build();
         TestProto.TestReply testReply = testClient.blockingStub.sayHello(changlb1);
         System.out.println(testReply.getMessage());
         try {

@@ -1,5 +1,6 @@
 package com.lbc.mo.netty;
 
+import com.lbc.mo.utils.StatsMapCache;
 import io.grpc.netty.shaded.io.netty.bootstrap.Bootstrap;
 import io.grpc.netty.shaded.io.netty.buffer.ByteBuf;
 import io.grpc.netty.shaded.io.netty.channel.Channel;
@@ -127,6 +128,7 @@ public class NettyClient implements InitializingBean {
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             LOG.info("Client exceptionCaught " + ctx.channel().remoteAddress() + " " + containerName);
             cause.printStackTrace();
+            StatsMapCache.getInstance().removeCache(containerName);
             ctx.close();
         }
 

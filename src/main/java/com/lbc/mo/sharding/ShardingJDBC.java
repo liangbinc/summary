@@ -10,19 +10,24 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +35,7 @@ import java.util.Properties;
 
 
 @Configuration
-@MapperScan(basePackages = "com.lbc.corgi.dao.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
+@MapperScan(basePackages = "com.lbc.mo.dao.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
 @EnableTransactionManagement
 public class ShardingJDBC {
     @Value("${spring.datasource.driver-class-name}")
@@ -43,6 +48,7 @@ public class ShardingJDBC {
     private String password;
 
     @Bean
+    @Primary
     public DataSource shardingDataSource() throws Exception {
 
         //dataSource
@@ -133,5 +139,38 @@ public class ShardingJDBC {
         properties.put("username", username);
         properties.put("password", password);
         return BasicDataSourceFactory.createDataSource(properties);
+    }
+
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
+        LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
+        entityManager.setDataSource(shardingDataSource());
+        entityManager.setPackagesToScan("com.lbc");
+        entityManager.setPersistenceProvider(new HibernatePersistenceProvider());
+//        entityManager.setJpaProperties(jpaProperties());
+
+        return entityManager;
+    }
+
+    /**
+     * Properties for Jpa
+     */
+    private static Properties jpaProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.setProperty("hibernate.format_sql", "true");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        return properties;
+    }
+
+    /**
+     * Get transaction manager
+     */
+    @Bean
+    public JpaTransactionManager transactionManager() throws Exception {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+        return transactionManager;
     }
 }
