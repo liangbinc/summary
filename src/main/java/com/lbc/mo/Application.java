@@ -1,7 +1,6 @@
 package com.lbc.mo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -10,8 +9,8 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableCaching
+@EnablePrometheusEndpoint
 public class Application {
-    private static final Log LOG = LogFactory.getLog(Application.class);
 
     protected Application() {
     }
@@ -19,4 +18,5 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
+
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lbc.mo.bean.GroupUsers;
 import com.lbc.mo.bean.StreamMessageFactory;
 import com.lbc.mo.bean.StreamType;
+import com.lbc.mo.dao.AppStateRepository;
+import com.lbc.mo.entity.AppState;
 import com.lbc.mo.netty.NettyClient;
 import com.lbc.mo.netty.StreamService;
 import com.lbc.mo.service.TestService;
@@ -18,12 +20,15 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Service
 public class TestServiceImpl implements TestService {
 
     @Autowired
     NettyClient nettyClient;
+    @Autowired
+    AppStateRepository appStateRepository;
 
     @Override
     @Cacheable(value = "redisUserInfo", key = "#user")
@@ -74,5 +79,16 @@ public class TestServiceImpl implements TestService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void saveTest() {
+        AppState appState = new AppState();
+        appState.setAppId("app_add_" + 1);
+        appState.setUser("add_app");
+        appState.setState("INIT");
+        appState.setStartTime(new Date());
+        appState.setEndTime(new Date());
+        appStateRepository.save(appState);
     }
 }
