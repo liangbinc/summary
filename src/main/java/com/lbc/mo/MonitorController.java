@@ -1,7 +1,6 @@
 package com.lbc.mo;
 
 import com.lbc.mo.dao.AppStateRepository;
-import com.lbc.mo.entity.AppState;
 import com.lbc.mo.entity.User;
 import com.lbc.mo.service.TestService;
 import org.apache.commons.logging.Log;

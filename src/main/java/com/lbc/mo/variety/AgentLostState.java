@@ -3,10 +3,9 @@ package com.lbc.mo.variety;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AgentLostState extends State{
+public class AgentLostState extends State {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentLostState.class);
-
 
     private Content content;
 

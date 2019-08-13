@@ -7,6 +7,8 @@
 
     <!--level： TRACE < DEBUG < INFO < WARN < ERROR-->
     <logger name="org.springframework" level="WARN"/>
+
+
     <!--print to  file-->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
@@ -33,6 +35,11 @@
             <level>DEBUG</level>
         </filter>
     </appender>
+
+
+    <logger name="io.grpc.netty.shaded.io.netty" level="INFO">
+        <appender-ref ref="FILE" />
+    </logger>
 
     <!--dev-->
     <springProfile name="dev">

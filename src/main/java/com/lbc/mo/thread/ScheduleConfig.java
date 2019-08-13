@@ -1,4 +1,4 @@
-package com.lbc.mo;
+package com.lbc.mo.thread;
 
 import com.lbc.mo.utils.CustomExecutor;
 import org.apache.commons.logging.Log;

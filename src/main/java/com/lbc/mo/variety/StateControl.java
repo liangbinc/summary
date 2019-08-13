@@ -2,6 +2,15 @@ package com.lbc.mo.variety;
 
 public class StateControl {
 
+    public static final  Integer NORMAL = 0;
+    public static final  Integer TASKOVER = 1;
+    public static final  Integer LACK = 2;
+    public static final  Integer QUEUINGTORUNNING = 3;
+    public static final  Integer AGENTLOST = 4;
+
+    private StateControl() {
+    }
+
     private static final boolean[][] STATEMAP = {
             // Normal TaskOver Lack QueuingToRunning AgentLost
 

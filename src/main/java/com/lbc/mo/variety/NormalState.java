@@ -3,7 +3,7 @@ package com.lbc.mo.variety;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NormalState extends State{
+public class NormalState extends State {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NormalState.class);
 

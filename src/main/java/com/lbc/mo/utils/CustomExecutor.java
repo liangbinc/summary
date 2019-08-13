@@ -109,11 +109,13 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         this.taskDecorator = taskDecorator;
     }
 
+    @Override
     protected ExecutorService initializeExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
         BlockingQueue<Runnable> queue = this.createQueue(this.queueCapacity);
         ThreadPoolExecutor executor;
         if (this.taskDecorator != null) {
             executor = new ThreadPoolExecutor(this.corePoolSize, this.maxPoolSize, (long) this.keepAliveSeconds, TimeUnit.SECONDS, queue, threadFactory, rejectedExecutionHandler) {
+                @Override
                 public void execute(Runnable command) {
                     Runnable decorated = taskDecorator.decorate(command);
                     if (decorated != command) {
@@ -164,6 +166,7 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         return this.threadPoolExecutor == null ? 0 : this.threadPoolExecutor.getActiveCount();
     }
 
+    @Override
     public void execute(Runnable task) {
         ThreadPoolExecutor executor = this.getThreadPoolExecutor();
 
@@ -174,10 +177,12 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
+    @Override
     public void execute(Runnable task, long startTimeout) {
         this.execute(task);
     }
 
+    @Override
     public Future<?> submit(Runnable task) {
         ThreadPoolExecutor executor = this.getThreadPoolExecutor();
 
@@ -188,6 +193,7 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
+    @Override
     public <T> Future<T> submit(Callable<T> task) {
         ThreadPoolExecutor executor = this.getThreadPoolExecutor();
 
@@ -198,6 +204,7 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
+    @Override
     public ListenableFuture<?> submitListenable(Runnable task) {
         ThreadPoolExecutor executor = this.getThreadPoolExecutor();
 
@@ -210,6 +217,7 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
+    @Override
     public <T> ListenableFuture<T> submitListenable(Callable<T> task) {
         ThreadPoolExecutor executor = this.getThreadPoolExecutor();
 
@@ -222,6 +230,7 @@ public class CustomExecutor extends ExecutorConfigurationSupport
         }
     }
 
+    @Override
     public boolean prefersShortLivedTasks() {
         return true;
     }

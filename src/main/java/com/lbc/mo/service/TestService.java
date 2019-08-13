@@ -8,6 +8,8 @@ public interface TestService {
 
     String testCache(String user);
 
+    String testEvictCache(String user);
+
     void conNetty();
 
     void saveTest();
